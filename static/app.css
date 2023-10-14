@@ -66,3 +66,15 @@ body {
 .btn:hover {
   opacity: 0.8;
 }
+
+@media (max-width: 600px) {
+    #form input[type="text"],
+    .btn {
+        width: 80%;
+    }
+}
+
+#form input[type="text"]:focus,
+.btn:focus {
+    border-color: #4caf50;
+}
