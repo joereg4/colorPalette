@@ -23,7 +23,7 @@ def get_colors(msg):
 
     response = openai.ChatCompletion.create(
         # If you do not have access to "gpt-4" try "gpt-3.5-turbo" instead.
-        model="gpt-4-1106-preview",
+        model="gpt-4",
         messages=messages,
         max_tokens=200,
     )
