@@ -1,35 +1,44 @@
 import openai
 from flask import Blueprint, render_template, request, url_for, current_app
 import json
+from typing import List
 
 pages = Blueprint(
     "colors", __name__, template_folder="templates", static_folder="static"
 )
 
+# Extract messages to global constant for better readability and a slight performance tweak.
+DEFAULT_MESSAGES = [
+    {"role": "system",
+     "content": "You are a color palette generating assistant that responds to text prompts for color palettes. You "
+                "should generate color palettes that fit the theme, mood, or instructions in the prompt. The palettes "
+                "should be between 2 and 8 colors."},
+    {"role": "user",
+     "content": "Convert the following verbal description of a color palette into a list of colors: The Mediterranean "
+                "Sea"},
+    {"role": "assistant", "content": '["#006699", "#66CCCC", "#F0E68C", "#008000", "#F08080"]'},
+    {"role": "user",
+     "content": "Convert the following verbal description of a color palette into a list of colors: sage, nature, earth"},
+    {"role": "assistant", "content": '["#EDF1D6", "#9DC08B", "#609966", "#40513B"]'},
+    # Last message is created on-the-fly based on function's argument.
+]
 
-def get_colors(msg):
-    messages = [
-        {"role": "system",
-         "content": "You are a color palette generating assistant that responds to text prompts for color palettes.  You should generate color palettes that fit the theme, mood, or instructions in the prompt.  The palettes should be between 2 and 8 colors."},
-        {"role": "user",
-         "content": "Convert the following verbal description of a color palette into a list of colors: The Mediterranean Sea"},
-        {"role": "assistant", "content": '["#006699", "#66CCCC", "#F0E68C", "#008000", "#F08080"]'},
-        {"role": "user",
-         "content": "Convert the following verbal description of a color palette into a list of colors: sage, nature, earth"},
-        {"role": "assistant", "content": '["#EDF1D6", "#9DC08B", "#609966", "#40513B"]'},
-        {"role": "user",
-         "content": f"Convert the following verbal description of a color palette into a list of colors: {msg}"},
-    ]
 
+def get_colors(msg: str) -> List[str]:
+    """
+    Function to get color codes based on the message using OpenAI service.
+    It uses gpt-4o model for this purpose.
+    """
+    messages = DEFAULT_MESSAGES + [{"role": "user",
+                                    "content": f"Convert the following verbal description of a color palette into a "
+                                               f"list of colors: {msg}"}]
     response = openai.ChatCompletion.create(
-        # If you do not have access to "gpt-4" try "gpt-3.5-turbo" instead.
-        model="gpt-4o",
+        model="gpt-4o",  # If you do not have access to "gpt-4" try "gpt-3.5-turbo" instead.
         messages=messages,
         max_tokens=200,
     )
-
+    # It's assumed that response is always valid and contains required fields.
     colors = json.loads(response["choices"][0]["message"]["content"])
-
     return colors
 
 
