@@ -3,6 +3,8 @@ from flask import Blueprint, render_template, request, url_for, current_app
 import json
 from typing import List
 
+CHAT_MODEL = 'gpt-4o-2024-08-06'
+
 pages = Blueprint(
     "colors", __name__, template_folder="templates", static_folder="static"
 )
@@ -33,7 +35,7 @@ def get_colors(msg: str) -> List[str]:
                                     "content": f"Convert the following verbal description of a color palette into a "
                                                f"list of colors: {msg}"}]
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  # If you do not have access to "gpt-4" try "gpt-3.5-turbo" instead.
+        model=CHAT_MODEL,
         messages=messages,
         max_tokens=200,
     )
