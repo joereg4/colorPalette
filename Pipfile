@@ -4,12 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-jupyter = "*"
 openai = "==0.27.8"
 python-dotenv = "==1.0.0"
 ipython = "*"
 flask = "*"
-gunicorn = "*"
+hypercorn = "*"
 
 [dev-packages]
 

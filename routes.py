@@ -1,7 +1,9 @@
-import openai
-from flask import Blueprint, render_template, request, url_for, current_app
 import json
 from typing import List
+
+import openai
+from flask import Blueprint, render_template, request
+import asyncio
 
 CHAT_MODEL = 'gpt-4o-2024-08-06'
 
@@ -26,29 +28,42 @@ DEFAULT_MESSAGES = [
 ]
 
 
-def get_colors(msg: str) -> List[str]:
+async def get_colors(msg: str) -> List[str]:
     """
-    Function to get color codes based on the message using OpenAI service.
+    Asynchronous function to get color codes based on the message using OpenAI service.
     It uses gpt-4o model for this purpose.
     """
     messages = DEFAULT_MESSAGES + [{"role": "user",
                                     "content": f"Convert the following verbal description of a color palette into a "
                                                f"list of colors: {msg}"}]
-    response = openai.ChatCompletion.create(
-        model=CHAT_MODEL,
-        messages=messages,
-        max_tokens=200,
-    )
+
+    # Define a synchronous function to call OpenAI API
+    def fetch_colors():
+        response = openai.ChatCompletion.create(
+            model=CHAT_MODEL,
+            messages=messages,
+            max_tokens=200,
+        )
+        return response
+
+    # Run the blocking OpenAI call in a separate thread to avoid blocking the event loop
+    response = await asyncio.to_thread(fetch_colors)
+
     # It's assumed that response is always valid and contains required fields.
     colors = json.loads(response["choices"][0]["message"]["content"])
     return colors
 
 
 @pages.route("/palette", methods=["POST"])
-def prompt_to_palette():
+async def prompt_to_palette():
     query = request.form.get("query")
-    colors = get_colors(query)
-    return {"colors": colors}
+    if not query:
+        return {"error": "No query provided."}, 400
+    try:
+        colors = await get_colors(query)
+        return {"colors": colors}
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 @pages.route("/")

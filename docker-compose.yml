@@ -1,13 +1,13 @@
+# docker-compose.yml
+
 services:
   flaskapp:
     container_name: color-palette-app
     build:
       context: .
-      args:
-        - --no-cache
+      # Removed invalid build args
     ports:
-      - "5000:5000"
+      - "8000:8000"  # Updated port to match Dockerfile
     environment:
-      - FLASK_APP=app.py
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-    command: flask run --host=0.0.0.0
+    restart: unless-stopped
