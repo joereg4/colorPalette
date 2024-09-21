@@ -1,5 +1,3 @@
-# Dockerfile
-
 # 1. Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
@@ -22,12 +20,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. Copy the current directory contents into the container at /app
 COPY . .
 
-# 7. Expose the port Hypercorn will run on
-EXPOSE 8000
+# 7. Create a non-root user and switch to it
+RUN addgroup --system app && adduser --system --ingroup app app
+USER app
 
-# 8. Define environment variable for OpenAI API key
-# (Ensure this is set securely via Docker Compose or other means)
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+# 8. Expose the port your app runs on
+EXPOSE 8000
 
 # 9. Run the Flask app with Hypercorn
 CMD ["hypercorn", "app:app", "--bind", "0.0.0.0:8000"]
