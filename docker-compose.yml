@@ -4,6 +4,8 @@ services:
   web:
     build:
       context: .
+    env_file:
+      - .env
     ports:
       - "8000"  # Internal port, not exposed directly
     environment:
