@@ -7,15 +7,17 @@ services:
     env_file:
       - .env
     expose:
-      - "8000"  # Internal port, not exposed directly
+      - "8000"
     restart: unless-stopped
 
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
     depends_on:
       - web
     restart: unless-stopped
