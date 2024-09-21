@@ -6,10 +6,8 @@ services:
       context: .
     env_file:
       - .env
-    ports:
+    expose:
       - "8000"  # Internal port, not exposed directly
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
     restart: unless-stopped
 
   nginx:
