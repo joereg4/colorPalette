@@ -5,7 +5,7 @@ import openai
 from flask import Blueprint, render_template, request
 import asyncio
 
-CHAT_MODEL = 'gpt-4o-2024-08-06'
+CHAT_MODEL = 'gpt-4o'
 
 pages = Blueprint(
     "colors", __name__, template_folder="templates", static_folder="static"
