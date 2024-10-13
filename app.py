@@ -19,12 +19,12 @@ def create_app():
 
 app = create_app()
 
-# Entry point for ASGI servers
+
 if __name__ == "__main__":
     import hypercorn.asyncio
     from hypercorn.config import Config
     import asyncio
 
     config = Config()
-    config.bind = ["0.0.0.0:8000"]  # You can change the port if needed
+    config.bind = ["0.0.0.0:8000"]
     asyncio.run(hypercorn.asyncio.serve(app, config))
