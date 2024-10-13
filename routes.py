@@ -5,7 +5,7 @@ import openai
 from flask import Blueprint, render_template, request
 import asyncio
 
-CHAT_MODEL = 'gpt-4o'
+CHAT_MODEL = "gpt-4o"
 
 pages = Blueprint(
     "colors", __name__, template_folder="templates", static_folder="static"
@@ -33,11 +33,12 @@ async def get_colors(msg: str) -> List[str]:
     Asynchronous function to get color codes based on the message using OpenAI service.
     It uses gpt-4o model for this purpose.
     """
-    messages = DEFAULT_MESSAGES + [{"role": "user",
-                                    "content": f"Convert the following verbal description of a color palette into a "
-                                               f"list of colors: {msg}"}]
+    messages = DEFAULT_MESSAGES + [
+        {"role": "user",
+         "content": f"Convert the following verbal description of a color palette into a "
+                    f"list of colors: {msg}"}
+    ]
 
-    # Define a synchronous function to call OpenAI API
     def fetch_colors():
         response = openai.ChatCompletion.create(
             model=CHAT_MODEL,
@@ -46,10 +47,8 @@ async def get_colors(msg: str) -> List[str]:
         )
         return response
 
-    # Run the blocking OpenAI call in a separate thread to avoid blocking the event loop
     response = await asyncio.to_thread(fetch_colors)
 
-    # It's assumed that response is always valid and contains required fields.
     colors = json.loads(response["choices"][0]["message"]["content"])
     return colors
 
