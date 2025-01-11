@@ -118,5 +118,5 @@ websocket-client==1.8.0
 Werkzeug>=3.0.6
 widgetsnbextension==4.0.13
 wsproto==1.2.0
-yarl==1.11.1
+yarl>=1.17.0,<2.0
 zipp==3.20.2

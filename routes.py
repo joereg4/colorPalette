@@ -1,9 +1,17 @@
 import json
 from typing import List
+import logging
 
 import openai
 from flask import Blueprint, render_template, request
 import asyncio
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 CHAT_MODEL = "gpt-4o"
 
@@ -62,7 +70,8 @@ async def prompt_to_palette():
         colors = await get_colors(query)
         return {"colors": colors}
     except Exception as e:
-        return {"error": str(e)}, 500
+        logger.error(f"Error generating palette: {str(e)}", exc_info=True)
+        return {"error": "An error occurred while generating the color palette."}, 500
 
 
 @pages.route("/")
