@@ -17,12 +17,9 @@ updates:
     labels:
       - "python"
       - "dependencies"
-    # Raise pull requests to update dependencies against main branch
     target-branch: "main"
-    # Add reviewers
     reviewers:
       - "joereg4"
-    # Group all minor and patch updates together
     groups:
       python-packages:
         patterns:
