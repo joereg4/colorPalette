@@ -17,7 +17,7 @@ updates:
     labels:
       - "python"
       - "dependencies"
-    target-branch: "main"
+    target-branch: "master"
     reviewers:
       - "joereg4"
     groups:
