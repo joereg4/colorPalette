@@ -1,7 +1,7 @@
 # Core application dependencies
 Flask[async]>=3.1.0
 Hypercorn>=0.17.3
-openai==2.26.0
+openai==2.30.0
 python-dotenv>=1.0.0
 
 # Security-patched minimum versions (addressing Dependabot alerts)
