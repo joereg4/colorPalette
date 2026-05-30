@@ -29,21 +29,25 @@ This project is a web application that leverages OpenAI's ChatGPT to generate cu
 
 ## Local Development
 
-To set up this project locally:
+This project uses Docker for local development and deployment. Python dependencies are managed in `requirements.txt`.
 
 1. Clone the repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Set up your `.env` file with your OpenAI API key:
+2. Set up your `.env` file with your OpenAI API key:
    ```
    OPENAI_API_KEY=your_api_key_here
    ```
-4. Run the Flask development server:
+3. Build and run with Docker Compose:
    ```
-   flask run
+   docker compose up --build
    ```
+4. Open the app at `http://localhost` (via the Nginx proxy)
+
+To run tests locally without Docker:
+
+```
+pip install -r requirements.txt
+pytest tests/ -v
+```
 
 ## Deployment
 
