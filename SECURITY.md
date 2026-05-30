@@ -2,9 +2,9 @@
 
 ## Reporting a Vulnerability
 
-We take the security of Book Tracker seriously. If you believe you have found a security vulnerability, please report it by creating a new Issue:
+We take the security of the Color Palette Generator seriously. If you believe you have found a security vulnerability, please report it by creating a new Issue:
 
-1. Go to the [Issues](https://github.com/joereg4/colorPallette/issues) section
+1. Go to the [Issues](https://github.com/joereg4/colorPalette/issues) section
 2. Click "New Issue"
 3. Use the title format: `[SECURITY] Brief description of vulnerability`
 4. In the description, please include:
@@ -27,4 +27,4 @@ We take the security of Book Tracker seriously. If you believe you have found a 
 - Do not access or modify other users' data
 - Do not execute denial of service attacks
 
-Thank you for helping keep Book Tracker secure! 
+Thank you for helping keep Color Palette Generator secure!
