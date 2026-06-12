@@ -1,10 +1,11 @@
-import json
-from typing import List
-import logging
-
-import openai
-from flask import Blueprint, render_template, request
 import asyncio
+import json
+import logging
+import re
+from typing import List
+
+from flask import Blueprint, render_template, request
+from openai import OpenAI
 
 # Configure logging
 logging.basicConfig(
@@ -15,9 +16,26 @@ logger = logging.getLogger(__name__)
 
 CHAT_MODEL = "gpt-4o"
 
+# Cap prompt length so a single request can't run up token costs.
+MAX_QUERY_LENGTH = 300
+
+# Accept #RGB, #RGBA, #RRGGBB, and #RRGGBBAA hex color formats.
+HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{3,8}$")
+
 pages = Blueprint(
     "colors", __name__, template_folder="templates", static_folder="static"
 )
+
+# Created lazily so the app can start (and tests can run) without an API key.
+_client = None
+
+
+def _get_client() -> OpenAI:
+    global _client
+    if _client is None:
+        _client = OpenAI()
+    return _client
+
 
 # Extract messages to global constant for better readability and a slight performance tweak.
 DEFAULT_MESSAGES = [
@@ -48,16 +66,23 @@ async def get_colors(msg: str) -> List[str]:
     ]
 
     def fetch_colors():
-        response = openai.ChatCompletion.create(
+        return _get_client().chat.completions.create(
             model=CHAT_MODEL,
             messages=messages,
             max_tokens=200,
         )
-        return response
 
     response = await asyncio.to_thread(fetch_colors)
 
-    colors = json.loads(response["choices"][0]["message"]["content"])
+    colors = json.loads(response.choices[0].message.content)
+
+    # Defense-in-depth: only pass validated hex codes through to the client,
+    # so prompt injection can't smuggle arbitrary strings into the response.
+    if not isinstance(colors, list) or not colors or not all(
+        isinstance(color, str) and HEX_COLOR_RE.match(color) for color in colors
+    ):
+        raise ValueError("Model returned an invalid color palette")
+
     return colors
 
 
@@ -66,6 +91,8 @@ async def prompt_to_palette():
     query = request.form.get("query")
     if not query:
         return {"error": "No query provided."}, 400
+    if len(query) > MAX_QUERY_LENGTH:
+        return {"error": f"Query must be {MAX_QUERY_LENGTH} characters or fewer."}, 400
     try:
         colors = await get_colors(query)
         return {"colors": colors}

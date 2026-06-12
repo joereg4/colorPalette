@@ -1,6 +1,12 @@
 .env
+.env.example
+.flaskenv
 .git
+.github
 .gitignore
+.idea
 node_modules
 __pycache__
-.idea
+.pytest_cache
+ssl
+tests
