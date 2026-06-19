@@ -16,5 +16,5 @@ tornado>=6.5.7           # CVE-2026-31958: multipart DoS + cookie validation
 h2>=4.3.0
 
 # Testing
-pytest>=9.0.3
+pytest>=9.1.0
 pytest-asyncio>=1.4.0
