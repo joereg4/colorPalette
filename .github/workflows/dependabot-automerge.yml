@@ -17,14 +17,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Wait for required checks
-        run: gh pr checks "$PR_URL" --watch --fail-fast --required
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Merge Dependabot PR
-        run: gh pr merge --merge "$PR_URL"
+      # Branch protection requires an up-to-date branch (strict status checks)
+      # and the required "test" check. Immediate `gh pr merge` races both:
+      # checks that just passed may not be visible to the merge API yet, and
+      # sibling Dependabot PRs leave others behind master. --auto queues the
+      # merge with GitHub until those requirements are actually satisfied.
+      - name: Enable auto-merge for Dependabot PR
+        run: |
+          gh pr update-branch "$PR_URL" || true
+          gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
