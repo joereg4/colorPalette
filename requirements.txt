@@ -6,7 +6,7 @@ python-dotenv>=1.2.3
 
 # Security-patched minimum versions (addressing Dependabot alerts)
 Werkzeug>=3.1.8          # CVE-2026-27199: safe_join() Windows device names
-urllib3>=2.7.0           # CVE: streaming API compression vulnerabilities
+urllib3>=2.8.0           # CVE: streaming API compression vulnerabilities
 requests>=2.34.2         # CVE: insecure temp file reuse in extract_zipped_paths()
 aiohttp>=3.14.3          # CVE: multipart/header smuggling and DoS fixes
 Jinja2>=3.1.6            # Security hardening
