@@ -18,14 +18,23 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Branch protection requires an up-to-date branch (strict status checks)
-      # and the required "test" check. Immediate `gh pr merge` races both:
-      # checks that just passed may not be visible to the merge API yet, and
-      # sibling Dependabot PRs leave others behind master. --auto queues the
-      # merge with GitHub until those requirements are actually satisfied.
+      # and the required "test" check. Do not update the branch with
+      # GITHUB_TOKEN: that push does not start a new workflow run, so the
+      # required check never appears and auto-merge waits forever. Ask
+      # Dependabot to rebase instead; that push re-runs CI. --auto queues
+      # the merge until the branch is current and checks have passed.
       - name: Enable auto-merge for Dependabot PR
         run: |
-          gh pr update-branch "$PR_URL" || true
-          gh pr merge --auto --merge "$PR_URL"
+          state=$(gh pr view "$PR_URL" --json mergeStateStatus --jq .mergeStateStatus)
+          if [ "$state" = "BEHIND" ] || [ "$state" = "DIRTY" ]; then
+            gh pr comment "$PR_URL" --body "@dependabot rebase"
+          fi
+          if ! gh pr merge --auto --merge "$PR_URL"; then
+            enabled=$(gh pr view "$PR_URL" --json autoMergeRequest --jq .autoMergeRequest)
+            if [ "$enabled" = "null" ]; then
+              exit 1
+            fi
+          fi
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
